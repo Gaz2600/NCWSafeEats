@@ -4,7 +4,7 @@ about: Suggest an improvement to NCW Safe Eats
 title: "[FEATURE] "
 labels: enhancement
 assignees: "Gaz2600"
-projects: ["Gaz2600/NCWSafeEats/NCWSafeEats"]
+projects: ["NCWSafeEats"]
 
 project_fields:
   Priority: ""
