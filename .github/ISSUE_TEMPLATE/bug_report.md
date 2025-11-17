@@ -3,6 +3,14 @@ name: "🐛 Bug Report"
 about: Report incorrect behavior or site errors
 title: "[BUG] "
 labels: bug
+assignees: "Gaz2600"
+projects:
+  - Gaz2600/NCWSafeEats/NCW Safe Eats Roadmap
+
+project_fields:
+  priority: ""
+  status: "Planned"
+  area: ""
 ---
 
 ### 🔧 What happened?
