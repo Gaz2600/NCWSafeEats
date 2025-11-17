@@ -3,6 +3,14 @@ name: "📊 Data Issue"
 about: Report incorrect inspection data, missing restaurants, or inaccurate details
 title: "[DATA] "
 labels: data
+assignees: "Gaz2600"
+projects:
+  - Gaz2600/NCWSafeEats/NCW Safe Eats Roadmap
+
+project_fields:
+  priority: ""
+  status: "Planned"
+  area: ""
 ---
 
 ### 🏪 Which restaurant?
