@@ -4,13 +4,12 @@ about: Suggest an improvement to NCW Safe Eats
 title: "[FEATURE] "
 labels: enhancement
 assignees: "Gaz2600"
-projects:
-  - Gaz2600/NCWSafeEats/NCW Safe Eats Roadmap
+projects: ["Gaz2600/NCWSafeEats/NCWSafeEats"]
 
 project_fields:
-  priority: ""
-  status: "Planned"
-  area: ""
+  Priority: ""
+  Status: "Planned"
+  Area: ""
 ---
 
 ### 📝 What would you like to see?
