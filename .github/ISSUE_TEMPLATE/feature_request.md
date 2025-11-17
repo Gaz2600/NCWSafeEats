@@ -5,9 +5,9 @@ title: "[FEATURE] "
 labels: enhancement
 assignees: "Gaz2600"
 projects: "NCWSafeEats"
-Priority: ""
-Status: "Planned"
-Area: ""
+priority: ""
+status: "Planned"
+area: ""
 ---
 
 ### 📝 What would you like to see?
