@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wenatchee Safe Eats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-elevated: #111827;
+      --card: #020617;
+      --accent: #22c55e;
+      --accent-warn: #eab308;
+      --accent-bad: #ef4444;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --border-subtle: #1f2937;
+      --chip-bg: #111827;
+      --chip-border: #1f2937;
+      --pill-bg: #020617;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text-main);
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.75rem 1rem 3rem;
+    }
+
+    header {
+      margin-bottom: 1.75rem;
+    }
+
+    .title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      margin: 0;
+      letter-spacing: 0.03em;
+    }
+
+    .beta-tag {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      max-width: 600px;
+    }
+
+    .search-bar {
+      margin-top: 1.25rem;
+      background: rgba(15, 23, 42, 0.85);
+      border-radius: 0.85rem;
+      border: 1px solid var(--border-subtle);
+      padding: 0.9rem 0.9rem 0.85rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .search-row label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .search-input-wrapper {
+      flex: 1;
+      min-width: 180px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.55rem 0.75rem 0.55rem 2.1rem;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-subtle);
+      background: #020617;
+      color: var(--text-main);
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: #4b5563;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.7rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem;
+      color: #6b7280;
+      pointer-events: none;
+    }
+
+    .chip-row {
+      margin-top: 0.65rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .chip {
+      font-size: 0.78rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid var(--chip-border);
+      background: var(--chip-bg);
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .chip.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(34, 197, 94, 0.08);
+    }
+
+    .filter-row {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .filter-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.75rem;
+    }
+
+    main {
+      margin-top: 1.5rem;
+    }
+
+    .results-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .results-list {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.85rem;
+    }
+
+    @media (min-width: 720px) {
+      .results-list {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+    }
+
+    .place-card {
+      border-radius: 0.9rem;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.96);
+      padding: 0.85rem 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease,
+        border-color 0.08s ease;
+    }
+
+    .place-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.6);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .place-name {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .place-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .score-pill {
+      min-width: 64px;
+      padding: 0.4rem 0.55rem;
+      border-radius: 0.75rem;
+      text-align: right;
+      font-size: 0.78rem;
+      background: var(--pill-bg);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .score-pill strong {
+      font-size: 1.05rem;
+      display: block;
+    }
+
+    .score-good {
+      border-color: rgba(34, 197, 94, 0.8);
+      color: var(--accent);
+    }
+
+    .score-okay {
+      border-color: rgba(234, 179, 8, 0.8);
+      color: var(--accent-warn);
+    }
+
+    .score-bad {
+      border-color: rgba(239, 68, 68, 0.9);
+      color: var(--accent-bad);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.1rem;
+      font-size: 0.75rem;
+    }
+
+    .tag {
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.78rem;
+      margin-top: 0.35rem;
+      color: var(--text-muted);
+    }
+
+    .violations span {
+      margin-right: 0.4rem;
+    }
+
+    .violations .crit {
+      color: var(--accent-bad);
+    }
+
+    .violations .noncrit {
+      color: var(--accent-warn);
+    }
+
+    .empty-state {
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      border: 1px dashed var(--border-subtle);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .error-state {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--accent-bad);
+    }
+
+    .loading-state {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    #show-more {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    #show-more button {
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      padding: 0;
+      font-size: 0.8rem;
+    }
+
+    /* Detail modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: min(640px, 100% - 2rem);
+      max-height: min(80vh, 640px);
+      background: #020617;
+      border-radius: 1rem;
+      border: 1px solid var(--border-subtle);
+      padding: 1rem 1.1rem 1.1rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: 1px solid var(--border-subtle);
+      border-radius: 999px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 0.15rem 0.5rem;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      overflow-y: auto;
+      padding-right: 0.3rem;
+    }
+
+    .modal-section-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin: 0.75rem 0 0.35rem;
+    }
+
+    .modal-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin: 0.35rem 0 0.5rem;
+    }
+
+    .modal-tag {
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .modal-inspections {
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-subtle);
+      background: #020617;
+      padding: 0.5rem 0.6rem;
+    }
+
+    .modal-inspections table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .modal-inspections th,
+    .modal-inspections td {
+      padding: 0.25rem 0.15rem;
+      text-align: left;
+    }
+
+    .modal-inspections th {
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .modal-inspections tr + tr td {
+      border-top: 1px solid rgba(31, 41, 55, 0.7);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .legend-dot {
+      width: 0.6rem;
+      height: 0.6rem;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .legend-dot.good {
+      background: var(--accent);
+    }
+    .legend-dot.monitor {
+      background: var(--accent-warn);
+    }
+    .legend-dot.watch {
+      background: var(--accent-bad);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="title-row">
+        <h1>Wenatchee Safe Eats</h1>
+        <span class="beta-tag">Prototype · Fake data · JSON-backed</span>
+      </div>
+      <p class="subtitle">
+        A clean, simple way to see recent food safety inspection history for
+        restaurants around Wenatchee and East Wenatchee. This demo reads from
+        <code>data/wenatchee-inspections.json</code> with made-up scores and
+        violations.
+      </p>
+
+      <section class="search-bar" aria-label="Search and filters">
+        <div class="search-row">
+          <label for="search">Search</label>
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input
+              id="search"
+              class="search-input"
+              type="text"
+              placeholder="Search by name, cuisine, or keyword…"
+            />
+          </div>
+        </div>
+
+        <!-- City filter -->
+        <div class="chip-row" style="margin-top:0.75rem;">
+          <button class="chip active" data-city="all">All areas</button>
+          <button class="chip" data-city="Wenatchee">Wenatchee</button>
+          <button class="chip" data-city="East Wenatchee">East Wenatchee</button>
+          <button class="chip" data-city="Other">Other / nearby</button>
+        </div>
+
+        <!-- Safety status filter -->
+        <div class="filter-row">
+          <span class="filter-label">Safety</span>
+          <button class="chip active" data-status="all">All</button>
+          <button class="chip" data-status="perfect">Perfect</button>
+          <button class="chip" data-status="good">Good</button>
+          <button class="chip" data-status="monitor">Needs monitoring</button>
+          <button class="chip" data-status="watchlist">Watchlist</button>
+        </div>
+      </section>
+    </header>
+
+    <main>
+      <div class="results-meta">
+        <div><span id="result-count">0</span> places shown</div>
+        <div class="legend">
+          <span><span class="legend-dot good"></span> Score ≥ 90: Good</span>
+          <span><span class="legend-dot monitor"></span> 80–89: Monitor</span>
+          <span><span class="legend-dot watch"></span> &lt;80: Watchlist</span>
+        </div>
+      </div>
+
+      <div id="loading" class="loading-state">Loading inspection data…</div>
+
+      <div id="results" class="results-list"></div>
+
+      <div id="empty" class="empty-state" style="display:none;">
+        No matches for that search or filter. Try a simpler name (for example,
+        “taco” instead of the full restaurant name), or clear some filters.
+      </div>
+
+      <div id="error" class="error-state" style="display:none;">
+        Could not load inspection data file. Showing no results.
+      </div>
+
+      <div id="show-more"></div>
+    </main>
+  </div>
+
+  <!-- Detail modal -->
+  <div id="detail-modal-backdrop" class="modal-backdrop">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="modal-title"></h2>
+          <div id="modal-meta" class="place-meta"></div>
+        </div>
+        <button class="modal-close" id="modal-close-btn">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-badges" id="modal-badges"></div>
+
+        <p id="modal-summary"></p>
+
+        <h3 class="modal-section-title">Latest inspection snapshot</h3>
+        <p id="modal-latest"></p>
+
+        <h3 class="modal-section-title">Recent inspections (demo)</h3>
+        <div class="modal-inspections" id="modal-inspections"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Global state ---
+    let PLACES = [];
+    const DEFAULT_LIMIT = 10;
+    let showAll = false;
+    let activeCity = "all";
+    let activeStatus = "all";
+    let searchTerm = "";
+
+    const resultsEl = document.getElementById("results");
+    const emptyEl = document.getElementById("empty");
+    const errorEl = document.getElementById("error");
+    const loadingEl = document.getElementById("loading");
+    const resultCountEl = document.getElementById("result-count");
+    const searchInput = document.getElementById("search");
+    const allChips = Array.from(document.querySelectorAll(".chip"));
+
+    const modalBackdrop = document.getElementById("detail-modal-backdrop");
+    const modalTitle = document.getElementById("modal-title");
+    const modalMeta = document.getElementById("modal-meta");
+    const modalBadges = document.getElementById("modal-badges");
+    const modalSummary = document.getElementById("modal-summary");
+    const modalLatest = document.getElementById("modal-latest");
+    const modalInspections = document.getElementById("modal-inspections");
+    const modalCloseBtn = document.getElementById("modal-close-btn");
+
+    function scoreClass(score) {
+      if (score >= 90) return "score-good";
+      if (score >= 80) return "score-okay";
+      return "score-bad";
+    }
+
+    function statusBucket(place) {
+      const s = place.score ?? 0;
+      if (s >= 98) return "perfect";
+      if (s >= 90) return "good";
+      if (s >= 80) return "monitor";
+      return "watchlist";
+    }
+
+    function formatDate(iso) {
+      if (!iso) return "Unknown";
+      const d = new Date(iso + "T00:00:00");
+      return d.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    }
+
+    function computeStatusLabel(place) {
+      const bucket = statusBucket(place);
+      if (bucket === "perfect") return "Perfect recent history";
+      if (bucket === "good") return "Generally good record";
+      if (bucket === "monitor") return "Needs monitoring";
+      return "On health department watchlist (demo)";
+    }
+
+    function render() {
+      const term = searchTerm.trim().toLowerCase();
+
+      // Filter
+      let filtered = PLACES.filter((p) => {
+        if (activeCity !== "all" && p.city !== activeCity) return false;
+        if (activeStatus !== "all" && statusBucket(p) !== activeStatus)
+          return false;
+        if (!term) return true;
+
+        const haystack = [
+          p.name,
+          p.city,
+          p.neighborhood,
+          ...(p.cuisine || []),
+          ...(p.tags || []),
+        ]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(term);
+      });
+
+      // Sort by score desc
+      filtered.sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+
+      const total = filtered.length;
+
+      // Limit results to top N unless searching or explicitly showing all
+      let toRender =
+        term || showAll ? filtered : filtered.slice(0, DEFAULT_LIMIT);
+
+      resultsEl.innerHTML = "";
+      resultCountEl.textContent = toRender.length;
+      emptyEl.style.display = total ? "none" : "block";
+
+      toRender.forEach((p) => {
+        const card = document.createElement("article");
+        card.className = "place-card";
+        card.dataset.id = p.id;
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div>
+              <h2 class="place-name">${p.name}</h2>
+              <div class="place-meta">
+                ${p.city || ""}${p.neighborhood ? " · " + p.neighborhood : ""}${
+          p.cuisine && p.cuisine.length ? " · " + p.cuisine.join(", ") : ""
+        }
+              </div>
+              <div class="tag-row">
+                <span class="tag">${p.status || computeStatusLabel(p)}</span>
+                ${
+                  p.cuisine && p.cuisine[0]
+                    ? `<span class="tag">${p.cuisine[0]}</span>`
+                    : ""
+                }
+              </div>
+            </div>
+            <div class="score-pill ${scoreClass(p.score ?? 0)}">
+              <strong>${p.score ?? "–"}</strong>
+              <span>Safe Eats score</span>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="violations">
+              <span>Last inspection: ${formatDate(p.lastInspection)}</span><br/>
+              <span class="crit">${p.critical ?? 0} critical</span>
+              <span class="noncrit">${p.nonCritical ?? 0} non-critical</span>
+            </div>
+            <div>
+              <span>Based on last 3–4 inspections (demo)</span>
+            </div>
+          </div>
+        `;
+
+        card.addEventListener("click", () => openDetailModal(p.id));
+        resultsEl.appendChild(card);
+      });
+
+      // Show-more footer
+      const showMoreContainer = document.getElementById("show-more");
+      if (!term && !showAll && total > DEFAULT_LIMIT) {
+        showMoreContainer.innerHTML = `Showing top ${DEFAULT_LIMIT} of ${total} places. 
+          <button id="show-all-btn">Show all</button>`;
+        document
+          .getElementById("show-all-btn")
+          .addEventListener("click", () => {
+            showAll = true;
+            render();
+          });
+      } else if (term || total <= DEFAULT_LIMIT) {
+        showMoreContainer.innerHTML = "";
+      } else if (showAll && total > DEFAULT_LIMIT) {
+        showMoreContainer.innerHTML = `Showing all ${total} places. 
+          <button id="show-top-btn">Show top ${DEFAULT_LIMIT}</button>`;
+        document
+          .getElementById("show-top-btn")
+          .addEventListener("click", () => {
+            showAll = false;
+            render();
+          });
+      }
+    }
+
+    function loadData() {
+      fetch("data/wenatchee-inspections.json", { cache: "no-store" })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          PLACES = Array.isArray(data) ? data : [];
+          loadingEl.style.display = "none";
+          errorEl.style.display = "none";
+          render();
+        })
+        .catch((err) => {
+          console.error("Error loading inspection data:", err);
+          PLACES = [];
+          loadingEl.style.display = "none";
+          errorEl.style.display = "block";
+          render();
+        });
+    }
+
+    // --- Modal logic ---
+    function openDetailModal(id) {
+      const place = PLACES.find((p) => String(p.id) === String(id));
+      if (!place) return;
+
+      modalTitle.textContent = place.name;
+      modalMeta.textContent = [
+        place.city,
+        place.neighborhood,
+        place.cuisine && place.cuisine.length
+          ? place.cuisine.join(", ")
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+
+      modalBadges.innerHTML = "";
+
+      const statusChip = document.createElement("span");
+      statusChip.className = "modal-tag";
+      statusChip.textContent = place.status || computeStatusLabel(place);
+      modalBadges.appendChild(statusChip);
+
+      if (place.cuisine && place.cuisine.length) {
+        const c = document.createElement("span");
+        c.className = "modal-tag";
+        c.textContent = place.cuisine.join(", ");
+        modalBadges.appendChild(c);
+      }
+
+      const bucket = statusBucket(place);
+      const bucketLabel =
+        bucket === "perfect"
+          ? "Perfect (score ≥ 98)"
+          : bucket === "good"
+          ? "Good (score 90–97)"
+          : bucket === "monitor"
+          ? "Needs monitoring (score 80–89)"
+          : "Watchlist (score < 80)";
+
+      modalSummary.textContent = `Safe Eats score: ${
+        place.score ?? "–"
+      } (${bucketLabel}). This summary is based on a demo scoring model using recent inspections.`;
+
+      modalLatest.textContent = `Last inspection on ${formatDate(
+        place.lastInspection
+      )} with ${place.critical ?? 0} critical and ${
+        place.nonCritical ?? 0
+      } non-critical violations recorded in the period. In a real deployment, this would link to the official health department report.`;
+
+      // Render inspection history table (demo)
+      modalInspections.innerHTML = "";
+      const wrapper = document.createElement("div");
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      thead.innerHTML = `
+        <tr>
+          <th>Date</th>
+          <th>Critical</th>
+          <th>Non-critical</th>
+          <th>Notes</th>
+        </tr>
+      `;
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+
+      // If the JSON later includes a real inspections array, use it; otherwise fake 3 rows
+      const history = place.inspections || [
+        {
+          date: place.lastInspection,
+          critical: place.critical ?? 0,
+          nonCritical: place.nonCritical ?? 0,
+          notes: "Most recent routine inspection (demo row).",
+        },
+        {
+          date: "2025-04-10",
+          critical: Math.max(0, (place.critical ?? 0) - 1),
+          nonCritical: (place.nonCritical ?? 0) + 1,
+          notes: "Earlier routine inspection (demo row).",
+        },
+        {
+          date: "2024-11-03",
+          critical: 0,
+          nonCritical: 0,
+          notes: "No violations recorded (demo row).",
+        },
+      ];
+
+      history.forEach((ins) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${formatDate(ins.date)}</td>
+          <td>${ins.critical ?? 0}</td>
+          <td>${ins.nonCritical ?? 0}</td>
+          <td>${ins.notes || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      wrapper.appendChild(table);
+      modalInspections.appendChild(wrapper);
+
+      modalBackdrop.classList.add("open");
+    }
+
+    function closeDetailModal() {
+      modalBackdrop.classList.remove("open");
+    }
+
+    // --- Event handlers ---
+    searchInput.addEventListener("input", (e) => {
+      searchTerm = e.target.value;
+      showAll = false;
+      render();
+    });
+
+    // Separate city and status chips
+    const cityChips = allChips.filter((c) => c.hasAttribute("data-city"));
+    const statusChips = allChips.filter((c) => c.hasAttribute("data-status"));
+
+    cityChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        cityChips.forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        activeCity = chip.getAttribute("data-city");
+        showAll = false;
+        render();
+      });
+    });
+
+    statusChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        statusChips.forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        activeStatus = chip.getAttribute("data-status");
+        showAll = false;
+        render();
+      });
+    });
+
+    modalCloseBtn.addEventListener("click", closeDetailModal);
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) {
+        closeDetailModal();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeDetailModal();
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", loadData);
+  </script>
+</body>
+</html>
