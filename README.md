@@ -31,3 +31,10 @@ This project was inspired by **Seattle Safe Eats** and exists to help residents 
 ---
 
 ## 📁 Project Structure
+/data
+inspections.json ← Local dataset of inspection results
+index.html ← Main site frontend
+style.css ← UI styling
+script.js ← Filtering + rendering logic
+LICENSE
+.gitignore
